@@ -224,11 +224,6 @@ function App() {
               </button>
             </div>
           </div>
-          <div className="left-footer">
-            <span>01</span>
-            <span>02</span>
-            <span>03</span>
-          </div>
         </div>
 
         {/* Center content */}
@@ -242,27 +237,18 @@ function App() {
 
           {image && !enhancedImage && (
             <div className="image-viewer">
-              <div className="image-container-wrapper">
-                <TransformWrapper
-                  initialScale={1}
-                  minScale={0.5}
-                  maxScale={4}
-                  onZoomChange={handleZoomChange}
-                  panning={{ disabled: true }}
-                >
-                  <TransformComponent>
-                    <img
-                      ref={imageRef}
-                      src={image}
-                      alt="Uploaded"
-                      style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
-                    />
-                  </TransformComponent>
-                </TransformWrapper>
+              <div className="image-container-wrapper" style={{ position: 'relative' }}>
+                <img
+                  ref={imageRef}
+                  src={image}
+                  alt="Uploaded"
+                  style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
+                />
 
                 <div
                   className="selection-box"
                   style={{
+                    position: 'absolute',
                     left: `${boxPosition.x}px`,
                     top: `${boxPosition.y}px`
                   }}
@@ -325,7 +311,6 @@ function App() {
             <div className="status-dot"></div>
             <span>SYSTEM ONLINE</span>
           </div>
-          <div className="brand">SC</div>
         </div>
       </div>
 
