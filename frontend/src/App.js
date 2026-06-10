@@ -185,7 +185,11 @@ function App() {
 
     } catch (err) {
       console.error('Enhancement error:', err);
-      setError(err.response?.data?.detail || err.message || 'Enhancement failed');
+      console.error('Error response:', err.response?.data);
+      const errorMsg = typeof err.response?.data?.detail === 'string'
+        ? err.response.data.detail
+        : err.message || 'Enhancement failed';
+      setError(errorMsg);
     } finally {
       setProcessing(false);
     }
