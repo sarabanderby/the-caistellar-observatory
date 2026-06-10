@@ -1,17 +1,23 @@
 import React, { useState, useRef } from 'react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import axios from 'axios';
 import './App.css';
 
 function App() {
   const [image, setImage] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
+  const [zoom, setZoom] = useState(1);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [boxPosition, setBoxPosition] = useState({ x: 100, y: 100 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [showCamera, setShowCamera] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+  const imageRef = useRef(null);
 
   // API endpoint - use backend route
   const API_ENDPOINT = window.location.hostname.includes('localhost')
@@ -71,6 +77,68 @@ function App() {
     setShowCamera(false);
   };
 
+  const clearImage = () => {
+    setImage(null);
+    setEnhancedImage(null);
+    setError(null);
+    setBoxPosition({ x: 100, y: 100 });
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - boxPosition.x, y: e.clientY - boxPosition.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const newX = e.clientX - dragStart.x;
+    const newY = e.clientY - dragStart.y;
+    setBoxPosition({ x: newX, y: newY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleZoomChange = (ref) => {
+    setZoom(ref.state.scale);
+  };
+
+  const extractCroppedImage = () => {
+    return new Promise((resolve) => {
+      const img = imageRef.current;
+      if (!img) {
+        resolve(null);
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+
+      // Get image natural dimensions and displayed dimensions
+      const imgRect = img.getBoundingClientRect();
+      const scaleX = img.naturalWidth / imgRect.width;
+      const scaleY = img.naturalHeight / imgRect.height;
+
+      // Calculate box position relative to image
+      const imgX = imgRect.left;
+      const imgY = imgRect.top;
+      const boxRelX = (boxPosition.x - imgX) * scaleX;
+      const boxRelY = (boxPosition.y - imgY) * scaleY;
+
+      // Draw cropped region
+      ctx.drawImage(
+        img,
+        boxRelX, boxRelY, 256 * scaleX, 256 * scaleY,
+        0, 0, 256, 256
+      );
+
+      canvas.toBlob(resolve, 'image/png');
+    });
+  };
+
   const handleEnhance = async () => {
     if (!image) {
       setError('Please upload an image first');
@@ -81,26 +149,33 @@ function App() {
     setError(null);
 
     try {
-      // Convert base64 to blob
-      const base64Response = await fetch(image);
-      const blob = await base64Response.blob();
+      // Extract the 256x256 cropped region
+      const croppedBlob = await extractCroppedImage();
+      if (!croppedBlob) {
+        setError('Failed to extract image region');
+        setProcessing(false);
+        return;
+      }
 
       // Create FormData
       const formData = new FormData();
-      formData.append('image', blob, 'image.png');
+      formData.append('image', croppedBlob, 'cropped.png');
 
       const response = await axios.post(API_ENDPOINT, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        timeout: 300000
+        timeout: 300000,
+        responseType: 'blob'
       });
 
-      if (response.data && response.data.enhanced_image) {
-        setEnhancedImage(`data:image/png;base64,${response.data.enhanced_image}`);
-      } else {
-        setError('No enhanced image returned from server');
-      }
+      // Convert blob response to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEnhancedImage(reader.result);
+      };
+      reader.readAsDataURL(response.data);
+
     } catch (err) {
       console.error('Enhancement error:', err);
       setError(err.response?.data?.detail || err.message || 'Enhancement failed');
@@ -110,7 +185,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
       <div className="app-container">
         {/* Top bar */}
         <div className="top-bar">
@@ -166,11 +241,48 @@ function App() {
           )}
 
           {image && !enhancedImage && (
-            <div className="image-viewer">
-              <img src={image} alt="Uploaded" style={{ maxWidth: '80%', maxHeight: '70vh', borderRadius: '4px' }} />
-              <button className="enhance-btn" onClick={handleEnhance} disabled={processing}>
-                {processing ? 'PROCESSING...' : 'ENHANCE'}
-              </button>
+            <div className="image-viewer" style={{ position: 'relative' }}>
+              <TransformWrapper
+                initialScale={1}
+                minScale={0.5}
+                maxScale={4}
+                onZoomChange={handleZoomChange}
+                panning={{ disabled: true }}
+              >
+                <TransformComponent>
+                  <img
+                    ref={imageRef}
+                    src={image}
+                    alt="Uploaded"
+                    style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
+                  />
+                </TransformComponent>
+              </TransformWrapper>
+
+              {image && (
+                <div
+                  className="selection-box"
+                  style={{
+                    left: `${boxPosition.x}px`,
+                    top: `${boxPosition.y}px`
+                  }}
+                  onMouseDown={handleMouseDown}
+                >
+                  <div className="corner top-left"></div>
+                  <div className="corner top-right"></div>
+                  <div className="corner bottom-left"></div>
+                  <div className="corner bottom-right"></div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
+                <button className="enhance-btn" onClick={handleEnhance} disabled={processing}>
+                  {processing ? 'PROCESSING...' : 'ENHANCE'}
+                </button>
+                <button className="enhance-btn" onClick={clearImage}>
+                  CLEAR IMAGE
+                </button>
+              </div>
             </div>
           )}
 
@@ -180,6 +292,9 @@ function App() {
                 <h3>Enhanced Result</h3>
                 <img src={enhancedImage} alt="Enhanced" />
               </div>
+              <button className="enhance-btn" onClick={clearImage} style={{ marginTop: '20px' }}>
+                CLEAR IMAGE
+              </button>
             </div>
           )}
         </div>
@@ -224,12 +339,12 @@ function App() {
               Click Upload to load telescope image or Camera to connect live feed
             </p>
             <p>
-              <strong>2. ENHANCE</strong><br />
-              Click ENHANCE button to process with AI super-resolution
+              <strong>2. TARGET CELESTIAL OBJECT</strong><br />
+              Drag the cyan box over the object you want to enhance
             </p>
             <p>
-              <strong>3. VIEW RESULTS</strong><br />
-              Enhanced image appears at 2x resolution (256x256 → 512x512)
+              <strong>3. ENHANCE</strong><br />
+              Click ENHANCE button - selected 256x256 area is enhanced to 512x512 (2x)
             </p>
             <p style={{ marginTop: '30px', fontSize: '0.85rem', opacity: 0.7 }}>
               Powered by SwinIR AI model on OpenShift AI
