@@ -1,0 +1,16 @@
+apiVersion: v2
+name: caistellar
+description: CAIstellar Observatory - AI-Powered Astronomical Image Enhancement
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - ai
+  - astronomy
+  - image-enhancement
+  - swinir
+  - super-resolution
+  - telescope
+maintainers:
+  - name: Sara Banderby
+  - name: CAI Team
