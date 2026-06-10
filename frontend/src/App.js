@@ -241,25 +241,25 @@ function App() {
           )}
 
           {image && !enhancedImage && (
-            <div className="image-viewer" style={{ position: 'relative' }}>
-              <TransformWrapper
-                initialScale={1}
-                minScale={0.5}
-                maxScale={4}
-                onZoomChange={handleZoomChange}
-                panning={{ disabled: true }}
-              >
-                <TransformComponent>
-                  <img
-                    ref={imageRef}
-                    src={image}
-                    alt="Uploaded"
-                    style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
-                  />
-                </TransformComponent>
-              </TransformWrapper>
+            <div className="image-viewer">
+              <div className="image-container-wrapper">
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={0.5}
+                  maxScale={4}
+                  onZoomChange={handleZoomChange}
+                  panning={{ disabled: true }}
+                >
+                  <TransformComponent>
+                    <img
+                      ref={imageRef}
+                      src={image}
+                      alt="Uploaded"
+                      style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
 
-              {image && (
                 <div
                   className="selection-box"
                   style={{
@@ -273,7 +273,7 @@ function App() {
                   <div className="corner bottom-left"></div>
                   <div className="corner bottom-right"></div>
                 </div>
-              )}
+              </div>
 
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
                 <button className="enhance-btn" onClick={handleEnhance} disabled={processing}>
