@@ -186,9 +186,21 @@ function App() {
     } catch (err) {
       console.error('Enhancement error:', err);
       console.error('Error response:', err.response?.data);
-      const errorMsg = typeof err.response?.data?.detail === 'string'
-        ? err.response.data.detail
-        : err.message || 'Enhancement failed';
+
+      // Always ensure error is a string
+      let errorMsg = 'Enhancement failed';
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          errorMsg = err.response.data;
+        } else if (err.response.data.detail && typeof err.response.data.detail === 'string') {
+          errorMsg = err.response.data.detail;
+        } else {
+          errorMsg = JSON.stringify(err.response.data);
+        }
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+
       setError(errorMsg);
     } finally {
       setProcessing(false);
