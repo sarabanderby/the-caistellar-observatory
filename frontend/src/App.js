@@ -122,16 +122,17 @@ function App() {
       const scaleX = img.naturalWidth / imgRect.width;
       const scaleY = img.naturalHeight / imgRect.height;
 
-      // Calculate box position relative to image
-      const imgX = imgRect.left;
-      const imgY = imgRect.top;
-      const boxRelX = (boxPosition.x - imgX) * scaleX;
-      const boxRelY = (boxPosition.y - imgY) * scaleY;
+      // Box position is already relative to parent container
+      // Just scale it to natural image dimensions
+      const sourceX = boxPosition.x * scaleX;
+      const sourceY = boxPosition.y * scaleY;
+      const sourceWidth = 256 * scaleX;
+      const sourceHeight = 256 * scaleY;
 
       // Draw cropped region
       ctx.drawImage(
         img,
-        boxRelX, boxRelY, 256 * scaleX, 256 * scaleY,
+        sourceX, sourceY, sourceWidth, sourceHeight,
         0, 0, 256, 256
       );
 
@@ -157,17 +158,23 @@ function App() {
         return;
       }
 
+      console.log('Cropped blob size:', croppedBlob.size, 'type:', croppedBlob.type);
+
       // Create FormData
       const formData = new FormData();
       formData.append('image', croppedBlob, 'cropped.png');
 
+      console.log('Sending to:', API_ENDPOINT);
+
       const response = await axios.post(API_ENDPOINT, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
         },
         timeout: 300000,
         responseType: 'blob'
       });
+
+      console.log('Response status:', response.status);
 
       // Convert blob response to base64
       const reader = new FileReader();
@@ -237,13 +244,23 @@ function App() {
 
           {image && !enhancedImage && (
             <div className="image-viewer">
-              <div className="image-container-wrapper" style={{ position: 'relative' }}>
-                <img
-                  ref={imageRef}
-                  src={image}
-                  alt="Uploaded"
-                  style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
-                />
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={0.5}
+                  maxScale={4}
+                  onZoomChange={handleZoomChange}
+                  panning={{ disabled: true }}
+                >
+                  <TransformComponent>
+                    <img
+                      ref={imageRef}
+                      src={image}
+                      alt="Uploaded"
+                      style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
 
                 <div
                   className="selection-box"
