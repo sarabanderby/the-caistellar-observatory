@@ -81,9 +81,18 @@ function App() {
     setError(null);
 
     try {
-      const response = await axios.post(API_ENDPOINT, {
-        image: image
-      }, {
+      // Convert base64 to blob
+      const base64Response = await fetch(image);
+      const blob = await base64Response.blob();
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append('image', blob, 'image.png');
+
+      const response = await axios.post(API_ENDPOINT, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
         timeout: 300000
       });
 

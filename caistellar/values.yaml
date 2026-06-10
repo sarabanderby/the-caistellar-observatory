@@ -42,7 +42,7 @@ backend:
   replicaCount: 1
 
   image:
-    repository: quay.io/sara_banderby/csi_cai
+    repository: quay.io/sara_banderby/caistellar-observatory
     pullPolicy: Always
     tag: "backend"
 
@@ -70,7 +70,7 @@ frontend:
   replicaCount: 1
 
   image:
-    repository: quay.io/sara_banderby/csi_cai
+    repository: quay.io/sara_banderby/caistellar-observatory
     pullPolicy: Always
     tag: "frontend"
 
