@@ -439,6 +439,22 @@ function App() {
                 <h3>Enhanced Result</h3>
                 <img src={enhancedImage} alt="Enhanced" />
               </div>
+
+              <div className="ai-disclaimer">
+                <h4>⚠ AI Enhancement Notice</h4>
+                <p>
+                  The AI enhancement process performs image restoration tasks such as super-resolution, denoising, and artifact removal.
+                  Its strengths include improving apparent image sharpness, reducing noise, and recovering visually plausible fine structures.
+                  However, the model infers details from learned patterns rather than physical measurements, meaning some reconstructed features
+                  may not accurately reflect the original data. Performance also degrades as image quality decreases; when images are heavily
+                  pixelated, blurred, compressed, or lack sufficient underlying information, the model may produce increasingly uncertain or
+                  artificial-looking details. In astronomical imagery, the enhancement process does not preserve or reconstruct physical properties
+                  such as luminosity, flux, spectral information, object classifications, or other scientifically measured characteristics, and
+                  enhanced features should therefore be interpreted as visual approximations rather than direct representations of the underlying
+                  observations.
+                </p>
+              </div>
+
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
                 <button className="enhance-btn" onClick={redoSelection}>
                   REDO SELECTION

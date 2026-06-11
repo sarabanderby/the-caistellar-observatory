@@ -193,6 +193,20 @@ body {
   margin: 0 auto;
 }
 
+/* Orange reflection underneath celestial object */
+.celestial-object::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 200px;
+  background: radial-gradient(ellipse at center, rgba(255, 120, 80, 0.4), rgba(255, 150, 100, 0.2) 40%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
 /* Texture overlay on celestial object */
 .celestial-object::before {
   content: '';
@@ -513,6 +527,27 @@ button:hover {
 /* File input (hidden) */
 input[type="file"] {
   display: none;
+}
+
+/* AI Disclaimer */
+.ai-disclaimer {
+  background: rgba(255, 150, 80, 0.1);
+  border: 1px solid rgba(255, 150, 80, 0.3);
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+  max-width: 600px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ai-disclaimer h4 {
+  color: rgba(255, 180, 120, 1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
 }
 
 /* Selection box */
