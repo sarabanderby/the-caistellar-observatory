@@ -431,6 +431,10 @@ function App() {
             <span className="info-label">Status</span>
             <span className="info-value">{processing ? 'Processing' : 'Ready'}</span>
           </div>
+          <div className="info-item">
+            <span className="info-label">Telescope</span>
+            <span className="info-value">Operational</span>
+          </div>
         </div>
 
         {/* Bottom bar */}
