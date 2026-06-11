@@ -82,7 +82,22 @@ function App() {
     if (aladin) {
       const newGridState = !gridVisible;
       setGridVisible(newGridState);
-      aladin.showCooGrid(newGridState);
+
+      // Try to access the grid layer and toggle visibility
+      try {
+        // Method 1: Try to get the coordinate grid view
+        if (aladin.view && aladin.view.cooGrid) {
+          aladin.view.cooGrid.visible = newGridState;
+          aladin.view.requestRedraw();
+        }
+        // Method 2: Alternative - toggle via options
+        else if (aladin.options) {
+          aladin.options.showCooGrid = newGridState;
+          aladin.view.requestRedraw();
+        }
+      } catch (err) {
+        console.error('Grid toggle error:', err);
+      }
     }
   };
 
@@ -139,7 +154,7 @@ function App() {
         showShareControl: false,
         showCatalog: true,
         showFrame: false,
-        showCooGrid: true,
+        showCooGrid: gridVisible,
         fullScreen: false
       });
       setAladin(aladinInstance);
