@@ -74,6 +74,16 @@
   display: block;
 }
 
+.telescope-header .main-title {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.telescope-header .subtitle {
+  font-size: 0.75rem;
+  margin-top: 5px;
+}
+
 /* Activate screen */
 .activate-telescope {
   text-align: center;
