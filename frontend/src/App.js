@@ -21,7 +21,6 @@ function App() {
   const [telescopeView, setTelescopeView] = useState('activate');
   const [showTelescopeHelp, setShowTelescopeHelp] = useState(false);
   const [aladin, setAladin] = useState(null);
-  const [gridVisible, setGridVisible] = useState(true);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const imageRef = useRef(null);
@@ -77,40 +76,6 @@ function App() {
     setTimeout(() => {
       initAladin();
     }, 100);
-  };
-
-  const toggleGrid = () => {
-    if (aladin) {
-      const newGridState = !gridVisible;
-      setGridVisible(newGridState);
-
-      // Try multiple methods to toggle the grid
-      try {
-        // Method 1: Direct API call (Aladin Lite v3)
-        if (typeof aladin.setCooGrid === 'function') {
-          aladin.setCooGrid(newGridState);
-        }
-        // Method 2: Options object (older versions)
-        else if (aladin.options) {
-          aladin.options.showCooGrid = newGridState;
-        }
-        // Method 3: View object
-        else if (aladin.view) {
-          aladin.view.options.showCooGrid = newGridState;
-        }
-
-        // Force redraw
-        if (aladin.view && typeof aladin.view.requestRedraw === 'function') {
-          aladin.view.requestRedraw();
-        } else if (typeof aladin.redraw === 'function') {
-          aladin.redraw();
-        }
-      } catch (err) {
-        console.error('Grid toggle error:', err);
-        console.log('Aladin instance:', aladin);
-        console.log('Available methods:', Object.keys(aladin));
-      }
-    }
   };
 
   const handleCaptureAndEnhance = async () => {
@@ -169,12 +134,6 @@ function App() {
         showCooGrid: true,
         fullScreen: false
       });
-
-      // Debug: Log available methods
-      console.log('Aladin instance created:', aladinInstance);
-      console.log('Aladin methods:', Object.keys(aladinInstance).filter(k => typeof aladinInstance[k] === 'function'));
-      console.log('Has setCooGrid?', typeof aladinInstance.setCooGrid);
-
       setAladin(aladinInstance);
     }
   };
@@ -729,14 +688,9 @@ function App() {
               ← BACK TO ENHANCEMENT
             </button>
             {telescopeView === 'telescope' && (
-              <div style={{ display: 'flex', gap: '15px' }}>
-                <button className="capture-enhance-btn" onClick={toggleGrid}>
-                  {gridVisible ? 'HIDE GRID' : 'SHOW GRID'}
-                </button>
-                <button className="capture-enhance-btn" onClick={handleCaptureAndEnhance}>
-                  CAPTURE & ENHANCE
-                </button>
-              </div>
+              <button className="capture-enhance-btn" onClick={handleCaptureAndEnhance}>
+                CAPTURE & ENHANCE
+              </button>
             )}
             <div className="status-indicator">
               <div className="status-dot"></div>
