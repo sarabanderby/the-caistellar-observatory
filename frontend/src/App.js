@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import html2canvas from 'html2canvas';
 import './App.css';
 import './Telescope.css';
 
@@ -76,19 +77,40 @@ function App() {
     }, 100);
   };
 
-  const handleCaptureAndEnhance = () => {
-    if (aladin) {
-      // Capture current Aladin view as base64 PNG
-      const dataURL = aladin.getViewDataURL('image/png');
+  const handleCaptureAndEnhance = async () => {
+    const aladinDiv = document.getElementById('aladin-lite-div');
+    if (!aladinDiv) {
+      setError('Telescope view not found');
+      return;
+    }
+
+    try {
+      setProcessing(true);
+
+      // Capture the Aladin div as a canvas using html2canvas
+      const canvas = await html2canvas(aladinDiv, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#000000',
+        logging: false
+      });
+
+      // Convert canvas to base64 PNG
+      const dataURL = canvas.toDataURL('image/png');
 
       // Load captured image into enhancement section
       setImage(dataURL);
       setEnhancedImage(null);
       setError(null);
       setBoxPosition({ x: 50, y: 50 });
+      setProcessing(false);
 
       // Scroll to top to show enhancement section
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error('Screenshot failed:', err);
+      setError('Failed to capture telescope view: ' + err.message);
+      setProcessing(false);
     }
   };
 
