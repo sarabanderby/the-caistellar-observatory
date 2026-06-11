@@ -117,15 +117,19 @@ function App() {
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
-      // Get image natural dimensions and displayed dimensions
+      // Get image position and dimensions
       const imgRect = img.getBoundingClientRect();
+
+      // Calculate box position RELATIVE to the image
+      const boxRelativeX = boxPosition.x - imgRect.left;
+      const boxRelativeY = boxPosition.y - imgRect.top;
+
+      // Scale from displayed size to natural size
       const scaleX = img.naturalWidth / imgRect.width;
       const scaleY = img.naturalHeight / imgRect.height;
 
-      // Box position is already relative to parent container
-      // Just scale it to natural image dimensions
-      const sourceX = boxPosition.x * scaleX;
-      const sourceY = boxPosition.y * scaleY;
+      const sourceX = boxRelativeX * scaleX;
+      const sourceY = boxRelativeY * scaleY;
       const sourceWidth = 256 * scaleX;
       const sourceHeight = 256 * scaleY;
 
