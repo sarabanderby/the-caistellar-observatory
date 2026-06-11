@@ -604,6 +604,11 @@ function App() {
           </div>
         </div>
 
+        {/* Scroll up indicator */}
+        <div className="scroll-indicator scroll-up" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          ∧
+        </div>
+
         {/* Telescope Help Modal */}
         {showTelescopeHelp && (
           <div className="help-overlay" onClick={() => setShowTelescopeHelp(false)}>
