@@ -14,6 +14,7 @@ function App() {
   const [showCamera, setShowCamera] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const imageRef = useRef(null);
@@ -96,6 +97,12 @@ function App() {
 
   const clearImage = () => {
     setImage(null);
+    setEnhancedImage(null);
+    setError(null);
+    setBoxPosition({ x: 50, y: 50 });
+  };
+
+  const redoSelection = () => {
     setEnhancedImage(null);
     setError(null);
     setBoxPosition({ x: 50, y: 50 });
@@ -264,7 +271,7 @@ function App() {
               <button className="nav-item" onClick={handleCameraClick}>
                 Camera
               </button>
-              <button className="nav-item" onClick={() => setShowHelp(true)}>
+              <button className="nav-item" onClick={() => setShowAbout(true)}>
                 About
               </button>
             </div>
@@ -323,9 +330,14 @@ function App() {
                 <h3>Enhanced Result</h3>
                 <img src={enhancedImage} alt="Enhanced" />
               </div>
-              <button className="enhance-btn" onClick={clearImage} style={{ marginTop: '20px' }}>
-                CLEAR IMAGE
-              </button>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
+                <button className="enhance-btn" onClick={redoSelection}>
+                  REDO SELECTION
+                </button>
+                <button className="enhance-btn" onClick={clearImage}>
+                  CLEAR IMAGE
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -337,8 +349,8 @@ function App() {
             <span className="info-value">Explore</span>
           </div>
           <div className="info-item">
-            <span className="info-label">Wavelength</span>
-            <span className="info-value">Visible</span>
+            <span className="info-label">Band</span>
+            <span className="info-value">Optical</span>
           </div>
           <div className="info-item">
             <span className="info-label">Resolution</span>
@@ -359,9 +371,45 @@ function App() {
         </div>
       </div>
 
-      {/* Help Modal */}
+      {/* Help Modal - Instructions */}
       {showHelp && (
         <div className="help-overlay" onClick={() => setShowHelp(false)}>
+          <div className="help-dialog" onClick={(e) => e.stopPropagation()}>
+            <h2>How to Use</h2>
+
+            <p style={{ marginTop: '20px', marginBottom: '15px' }}>
+              <strong>1. LOAD IMAGE</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Click Upload to select an image file</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Click Camera to capture from your device</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>2. SELECT REGION</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Drag the cyan selection box over the area you want to enhance</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>3. ENHANCE</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Click ENHANCE to process the selected region</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ The 256x256 selection will be enhanced to 512x512 (2x resolution)</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>4. REVIEW RESULTS</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Click REDO SELECTION to choose a different area</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Click CLEAR IMAGE to start over with a new image</p>
+
+            <button onClick={() => setShowHelp(false)} style={{ marginTop: '25px' }}>
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* About Modal - Mission Briefing */}
+      {showAbout && (
+        <div className="help-overlay" onClick={() => setShowAbout(false)}>
           <div className="help-dialog" onClick={(e) => e.stopPropagation()}>
             <h2 style={{ marginBottom: '10px' }}>🌌 MISSION BRIEFING</h2>
             <h3 style={{ fontSize: '1.3rem', marginBottom: '20px', opacity: 0.9 }}>CAIstellar Observatory</h3>
@@ -384,19 +432,11 @@ function App() {
             <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ ONNX runtime optimization</p>
             <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Red Hat Universal Base Images</p>
 
-            <p style={{ marginBottom: '15px' }}>
-              <strong>OPERATION:</strong>
-            </p>
-            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Upload: Load telescope image from file</p>
-            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Camera: Capture live feed from connected device</p>
-            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Target: Drag selection box over celestial object</p>
-            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Enhance: Process selected region with AI</p>
-
             <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '25px' }}>
               This Quickstart serves as a reference architecture for deploying production AI workloads on OpenShift.
             </p>
 
-            <button onClick={() => setShowHelp(false)} style={{ marginTop: '25px' }}>
+            <button onClick={() => setShowAbout(false)} style={{ marginTop: '25px' }}>
               CLOSE
             </button>
           </div>
