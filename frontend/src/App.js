@@ -351,7 +351,7 @@ function App() {
         <div className="left-sidebar">
           <div>
             <h1 className="main-title">
-              Welcome to the<br />
+              Welcome to<br />
               CAIstellar<br />
               Observatory
             </h1>
@@ -395,7 +395,7 @@ function App() {
                   ref={imageRef}
                   src={image}
                   alt="Uploaded"
-                  style={{ maxWidth: '600px', maxHeight: '600px', display: 'block', userSelect: 'none' }}
+                  style={{ maxWidth: '800px', maxHeight: '700px', display: 'block', userSelect: 'none' }}
                 />
 
                 <div
@@ -435,27 +435,29 @@ function App() {
 
           {enhancedImage && (
             <div className="image-viewer">
-              <div className="enhanced-panel">
-                <h3>Enhanced Result</h3>
-                <img src={enhancedImage} alt="Enhanced" />
+              <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start', maxWidth: '90%', margin: '0 auto' }}>
+                <div className="enhanced-panel" style={{ flex: '0 0 auto' }}>
+                  <h3>Enhanced Result</h3>
+                  <img src={enhancedImage} alt="Enhanced" />
+                </div>
+
+                <div className="ai-disclaimer" style={{ flex: '1', maxWidth: '400px', marginTop: '0' }}>
+                  <h4>⚠ AI Enhancement Notice</h4>
+                  <p>
+                    The AI enhancement process performs image restoration tasks such as super-resolution, denoising, and artifact removal.
+                    Its strengths include improving apparent image sharpness, reducing noise, and recovering visually plausible fine structures.
+                    However, the model infers details from learned patterns rather than physical measurements, meaning some reconstructed features
+                    may not accurately reflect the original data. Performance also degrades as image quality decreases; when images are heavily
+                    pixelated, blurred, compressed, or lack sufficient underlying information, the model may produce increasingly uncertain or
+                    artificial-looking details. In astronomical imagery, the enhancement process does not preserve or reconstruct physical properties
+                    such as luminosity, flux, spectral information, object classifications, or other scientifically measured characteristics, and
+                    enhanced features should therefore be interpreted as visual approximations rather than direct representations of the underlying
+                    observations.
+                  </p>
+                </div>
               </div>
 
-              <div className="ai-disclaimer">
-                <h4>⚠ AI Enhancement Notice</h4>
-                <p>
-                  The AI enhancement process performs image restoration tasks such as super-resolution, denoising, and artifact removal.
-                  Its strengths include improving apparent image sharpness, reducing noise, and recovering visually plausible fine structures.
-                  However, the model infers details from learned patterns rather than physical measurements, meaning some reconstructed features
-                  may not accurately reflect the original data. Performance also degrades as image quality decreases; when images are heavily
-                  pixelated, blurred, compressed, or lack sufficient underlying information, the model may produce increasingly uncertain or
-                  artificial-looking details. In astronomical imagery, the enhancement process does not preserve or reconstruct physical properties
-                  such as luminosity, flux, spectral information, object classifications, or other scientifically measured characteristics, and
-                  enhanced features should therefore be interpreted as visual approximations rather than direct representations of the underlying
-                  observations.
-                </p>
-              </div>
-
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '30px' }}>
                 <button className="enhance-btn" onClick={redoSelection}>
                   REDO SELECTION
                 </button>
