@@ -110,24 +110,27 @@ function App() {
 
   const handleMouseDown = (e) => {
     e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - boxPosition.x, y: e.clientY - boxPosition.y });
+    if (imageContainerRef.current) {
+      const containerRect = imageContainerRef.current.getBoundingClientRect();
+      const offsetX = e.clientX - containerRect.left - boxPosition.x;
+      const offsetY = e.clientY - containerRect.top - boxPosition.y;
+      setDragStart({ x: offsetX, y: offsetY });
+      setIsDragging(true);
+    }
   };
 
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isDragging || !imageContainerRef.current) return;
 
-    if (imageContainerRef.current) {
-      const containerRect = imageContainerRef.current.getBoundingClientRect();
-      let newX = e.clientX - dragStart.x - containerRect.left;
-      let newY = e.clientY - dragStart.y - containerRect.top;
+    const containerRect = imageContainerRef.current.getBoundingClientRect();
+    let newX = e.clientX - containerRect.left - dragStart.x;
+    let newY = e.clientY - containerRect.top - dragStart.y;
 
-      // Keep box within container bounds
-      newX = Math.max(0, Math.min(newX, containerRect.width - 256));
-      newY = Math.max(0, Math.min(newY, containerRect.height - 256));
+    // Keep box within container bounds
+    newX = Math.max(0, Math.min(newX, containerRect.width - 256));
+    newY = Math.max(0, Math.min(newY, containerRect.height - 256));
 
-      setBoxPosition({ x: newX, y: newY });
-    }
+    setBoxPosition({ x: newX, y: newY });
   };
 
   const handleMouseUp = () => {
