@@ -7,10 +7,11 @@ import './Telescope.css';
 function App() {
   const [image, setImage] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
+  const [originalCrop, setOriginalCrop] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [systemOnline, setSystemOnline] = useState(false);
-  const [boxPosition, setBoxPosition] = useState({ x: 50, y: 50 });
+  const [boxPosition, setBoxPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [showCamera, setShowCamera] = useState(false);
@@ -83,20 +84,17 @@ function App() {
       const newGridState = !gridVisible;
       setGridVisible(newGridState);
 
-      // Try to access the grid layer and toggle visibility
+      // Aladin Lite uses the view.displayCooGrid property
       try {
-        // Method 1: Try to get the coordinate grid view
-        if (aladin.view && aladin.view.cooGrid) {
-          aladin.view.cooGrid.visible = newGridState;
-          aladin.view.requestRedraw();
-        }
-        // Method 2: Alternative - toggle via options
-        else if (aladin.options) {
-          aladin.options.showCooGrid = newGridState;
+        if (aladin.view) {
+          aladin.view.displayCooGrid = newGridState;
           aladin.view.requestRedraw();
         }
       } catch (err) {
         console.error('Grid toggle error:', err);
+        // Log the aladin object to see available methods
+        console.log('Aladin object:', aladin);
+        console.log('Aladin view:', aladin.view);
       }
     }
   };
@@ -126,8 +124,8 @@ function App() {
       setImage(dataURL);
       setEnhancedImage(null);
       setError(null);
-      setBoxPosition({ x: 50, y: 50 });
       setProcessing(false);
+      centerBoundingBox();
 
       // Scroll to top to show enhancement section
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -161,6 +159,18 @@ function App() {
     }
   };
 
+  const centerBoundingBox = () => {
+    // Wait for image to render, then center the box
+    setTimeout(() => {
+      if (imageContainerRef.current) {
+        const containerRect = imageContainerRef.current.getBoundingClientRect();
+        const centerX = (containerRect.width - 256) / 2;
+        const centerY = (containerRect.height - 256) / 2;
+        setBoxPosition({ x: Math.max(0, centerX), y: Math.max(0, centerY) });
+      }
+    }, 100);
+  };
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
@@ -169,6 +179,7 @@ function App() {
         setImage(e.target.result);
         setEnhancedImage(null);
         setError(null);
+        centerBoundingBox();
       };
       reader.readAsDataURL(file);
     }
@@ -202,6 +213,7 @@ function App() {
       setImage(imageData);
       setEnhancedImage(null);
       setError(null);
+      centerBoundingBox();
       closeCamera();
     }
   };
@@ -217,14 +229,16 @@ function App() {
   const clearImage = () => {
     setImage(null);
     setEnhancedImage(null);
+    setOriginalCrop(null);
     setError(null);
-    setBoxPosition({ x: 50, y: 50 });
+    setBoxPosition({ x: 0, y: 0 });
   };
 
   const redoSelection = () => {
     setEnhancedImage(null);
+    setOriginalCrop(null);
     setError(null);
-    setBoxPosition({ x: 50, y: 50 });
+    centerBoundingBox();
   };
 
   const handleMouseDown = (e) => {
@@ -310,6 +324,13 @@ function App() {
       }
 
       console.log('Cropped blob size:', croppedBlob.size, 'type:', croppedBlob.type);
+
+      // Save the original crop for display
+      const originalReader = new FileReader();
+      originalReader.onloadend = () => {
+        setOriginalCrop(originalReader.result);
+      };
+      originalReader.readAsDataURL(croppedBlob);
 
       // Create FormData
       const formData = new FormData();
@@ -459,13 +480,23 @@ function App() {
 
           {enhancedImage && (
             <div className="image-viewer">
-              <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start', maxWidth: '90%', margin: '0 auto' }}>
+              <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start', maxWidth: '95%', margin: '0 auto' }}>
+                {/* Original Crop */}
+                {originalCrop && (
+                  <div className="enhanced-panel" style={{ flex: '0 0 auto' }}>
+                    <h3>Original Selection (256×256)</h3>
+                    <img src={originalCrop} alt="Original Crop" style={{ width: '256px', height: '256px' }} />
+                  </div>
+                )}
+
+                {/* Enhanced Result */}
                 <div className="enhanced-panel" style={{ flex: '0 0 auto' }}>
-                  <h3>Enhanced Result</h3>
+                  <h3>Enhanced Result (512×512)</h3>
                   <img src={enhancedImage} alt="Enhanced" />
                 </div>
 
-                <div className="ai-disclaimer" style={{ flex: '1', maxWidth: '400px' }}>
+                {/* AI Disclaimer */}
+                <div className="ai-disclaimer" style={{ flex: '1', maxWidth: '350px' }}>
                   <h4>⚠ AI Enhancement Notice</h4>
                   <p>
                     The AI enhancement process performs image restoration tasks such as super-resolution, denoising, and artifact removal.
