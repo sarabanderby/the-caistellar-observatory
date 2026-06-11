@@ -15,20 +15,32 @@
   width: 100%;
   height: 100%;
   background-image:
-    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
     radial-gradient(1px 1px at 60% 70%, white, transparent),
-    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(2px 2px at 50% 50%, white, transparent),
     radial-gradient(1px 1px at 80% 10%, white, transparent),
-    radial-gradient(1px 1px at 90% 60%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
     radial-gradient(1px 1px at 33% 80%, white, transparent),
     radial-gradient(1px 1px at 15% 15%, white, transparent),
-    radial-gradient(1px 1px at 45% 20%, white, transparent),
+    radial-gradient(2px 2px at 45% 20%, white, transparent),
     radial-gradient(1px 1px at 25% 55%, white, transparent),
-    radial-gradient(1px 1px at 70% 85%, white, transparent),
+    radial-gradient(2px 2px at 70% 85%, white, transparent),
     radial-gradient(1px 1px at 85% 40%, white, transparent),
-    radial-gradient(1px 1px at 40% 90%, white, transparent);
+    radial-gradient(2px 2px at 40% 90%, white, transparent),
+    radial-gradient(1px 1px at 10% 60%, white, transparent),
+    radial-gradient(2px 2px at 75% 25%, white, transparent),
+    radial-gradient(1px 1px at 35% 45%, white, transparent),
+    radial-gradient(1px 1px at 95% 80%, white, transparent),
+    radial-gradient(2px 2px at 55% 15%, white, transparent),
+    radial-gradient(1px 1px at 65% 95%, white, transparent),
+    radial-gradient(1px 1px at 5% 35%, white, transparent),
+    radial-gradient(2px 2px at 48% 68%, white, transparent),
+    radial-gradient(1px 1px at 88% 28%, white, transparent),
+    radial-gradient(1px 1px at 18% 88%, white, transparent),
+    radial-gradient(2px 2px at 72% 52%, white, transparent),
+    radial-gradient(1px 1px at 42% 12%, white, transparent);
   background-size: 100% 100%;
-  opacity: 0.6;
+  opacity: 0.8;
   z-index: 1;
   pointer-events: none;
   animation: twinkle 4s ease-in-out infinite;
@@ -164,6 +176,21 @@
 #aladin-lite-div {
   width: 100%;
   height: 100%;
+}
+
+/* Override Aladin grid color */
+#aladin-lite-div canvas {
+  /* This will affect the main canvas but grid is drawn on it */
+}
+
+/* Try to override grid styling if Aladin uses SVG or specific classes */
+.telescope-page .aladin-grid-container,
+.telescope-page .aladin-reticleCanvas,
+.telescope-page #aladin-lite-div svg line,
+.telescope-page #aladin-lite-div svg path,
+.telescope-page #aladin-lite-div svg text {
+  stroke: rgba(100, 100, 100, 0.5) !important;
+  fill: rgba(150, 150, 150, 0.7) !important;
 }
 
 /* Navigation link button */

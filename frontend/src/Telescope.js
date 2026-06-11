@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Telescope.css';
 
 function Telescope() {
-  const [view, setView] = useState('activate'); // 'activate', 'hemisphere', 'telescope'
-  const [selectedHemisphere, setSelectedHemisphere] = useState(null);
+  const [view, setView] = useState('activate'); // 'activate', 'telescope'
   const [aladin, setAladin] = useState(null);
 
   useEffect(() => {
@@ -26,39 +25,21 @@ function Telescope() {
   }, []);
 
   const handleActivate = () => {
-    setView('hemisphere');
-  };
-
-  const handleHemisphereSelect = (hemisphere) => {
-    setSelectedHemisphere(hemisphere);
     setView('telescope');
 
     // Wait for view to render, then initialize Aladin
     setTimeout(() => {
-      initAladin(hemisphere);
+      initAladin();
     }, 100);
   };
 
-  const initAladin = (hemisphere) => {
-    // Set coordinates based on hemisphere
-    let raHours, dec;
-    if (hemisphere === 'northern') {
-      raHours = 12;
-      dec = 45;
-    } else if (hemisphere === 'southern') {
-      raHours = 12;
-      dec = -45;
-    } else { // equatorial
-      raHours = 12;
-      dec = 0;
-    }
-
-    // Initialize Aladin Lite
+  const initAladin = () => {
+    // Initialize Aladin Lite pointing to equatorial view
     if (window.A) {
       const aladinInstance = window.A.aladin('#aladin-lite-div', {
         survey: 'P/DSS2/color',
         fov: 60,
-        target: `${raHours} ${dec}`,
+        target: '12 0', // Equatorial view
         projection: 'AIT',
         cooFrame: 'equatorial',
         showReticle: false,
@@ -69,7 +50,7 @@ function Telescope() {
         showShareControl: false,
         showCatalog: true,
         showFrame: false,
-        showCooGrid: false,
+        showCooGrid: true, // Re-enable grid
         fullScreen: false
       });
 
@@ -114,33 +95,6 @@ function Telescope() {
               <button className="activate-btn" onClick={handleActivate}>
                 ACTIVATE
               </button>
-            </div>
-          )}
-
-          {view === 'hemisphere' && (
-            <div className="hemisphere-choice active">
-              <h2 className="choice-title">Select Your Hemisphere</h2>
-              <p className="choice-subtitle">Choose your viewing location to begin observation</p>
-              <div className="hemisphere-choice-btns">
-                <button
-                  className="hemisphere-choice-btn"
-                  onClick={() => handleHemisphereSelect('northern')}
-                >
-                  Northern Hemisphere
-                </button>
-                <button
-                  className="hemisphere-choice-btn"
-                  onClick={() => handleHemisphereSelect('southern')}
-                >
-                  Southern Hemisphere
-                </button>
-                <button
-                  className="hemisphere-choice-btn"
-                  onClick={() => handleHemisphereSelect('equatorial')}
-                >
-                  Equatorial View
-                </button>
-              </div>
             </div>
           )}
 
