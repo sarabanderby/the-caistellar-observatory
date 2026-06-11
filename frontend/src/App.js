@@ -1,15 +1,14 @@
-import React, { useState, useRef } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
 function App() {
   const [image, setImage] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
-  const [zoom, setZoom] = useState(1);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
-  const [boxPosition, setBoxPosition] = useState({ x: 100, y: 100 });
+  const [systemOnline, setSystemOnline] = useState(false);
+  const [boxPosition, setBoxPosition] = useState({ x: 50, y: 50 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [showCamera, setShowCamera] = useState(false);
@@ -18,11 +17,29 @@ function App() {
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const imageRef = useRef(null);
+  const imageContainerRef = useRef(null);
 
   // API endpoint - use backend route
-  const API_ENDPOINT = window.location.hostname.includes('localhost')
-    ? 'http://localhost:8080/api/enhance'
-    : `${window.location.protocol}//${window.location.hostname.replace('caistellar', 'caistellar-backend')}/api/enhance`;
+  const BACKEND_BASE = window.location.hostname.includes('localhost')
+    ? 'http://localhost:8080'
+    : `${window.location.protocol}//${window.location.hostname.replace('caistellar', 'caistellar-backend')}`;
+  const API_ENDPOINT = `${BACKEND_BASE}/api/enhance`;
+
+  // Check system health on mount and every 30 seconds
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        await axios.get(`${BACKEND_BASE}/health`, { timeout: 5000 });
+        setSystemOnline(true);
+      } catch (err) {
+        setSystemOnline(false);
+      }
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000);
+    return () => clearInterval(interval);
+  }, [BACKEND_BASE]);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -81,27 +98,33 @@ function App() {
     setImage(null);
     setEnhancedImage(null);
     setError(null);
-    setBoxPosition({ x: 100, y: 100 });
+    setBoxPosition({ x: 50, y: 50 });
   };
 
   const handleMouseDown = (e) => {
+    e.stopPropagation();
     setIsDragging(true);
     setDragStart({ x: e.clientX - boxPosition.x, y: e.clientY - boxPosition.y });
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    const newX = e.clientX - dragStart.x;
-    const newY = e.clientY - dragStart.y;
-    setBoxPosition({ x: newX, y: newY });
+
+    if (imageContainerRef.current) {
+      const containerRect = imageContainerRef.current.getBoundingClientRect();
+      let newX = e.clientX - dragStart.x - containerRect.left;
+      let newY = e.clientY - dragStart.y - containerRect.top;
+
+      // Keep box within container bounds
+      newX = Math.max(0, Math.min(newX, containerRect.width - 256));
+      newY = Math.max(0, Math.min(newY, containerRect.height - 256));
+
+      setBoxPosition({ x: newX, y: newY });
+    }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
-  };
-
-  const handleZoomChange = (ref) => {
-    setZoom(ref.state.scale);
   };
 
   const extractCroppedImage = () => {
@@ -117,19 +140,14 @@ function App() {
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
-      // Get image position and dimensions
-      const imgRect = img.getBoundingClientRect();
-
-      // Calculate box position RELATIVE to the image
-      const boxRelativeX = boxPosition.x - imgRect.left;
-      const boxRelativeY = boxPosition.y - imgRect.top;
-
+      // Box position is now relative to the image container
       // Scale from displayed size to natural size
+      const imgRect = img.getBoundingClientRect();
       const scaleX = img.naturalWidth / imgRect.width;
       const scaleY = img.naturalHeight / imgRect.height;
 
-      const sourceX = boxRelativeX * scaleX;
-      const sourceY = boxRelativeY * scaleY;
+      const sourceX = boxPosition.x * scaleX;
+      const sourceY = boxPosition.y * scaleY;
       const sourceWidth = 256 * scaleX;
       const sourceHeight = 256 * scaleY;
 
@@ -264,23 +282,13 @@ function App() {
 
           {image && !enhancedImage && (
             <div className="image-viewer">
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <TransformWrapper
-                  initialScale={1}
-                  minScale={0.5}
-                  maxScale={4}
-                  onZoomChange={handleZoomChange}
-                  panning={{ disabled: true }}
-                >
-                  <TransformComponent>
-                    <img
-                      ref={imageRef}
-                      src={image}
-                      alt="Uploaded"
-                      style={{ maxWidth: '600px', maxHeight: '600px', display: 'block' }}
-                    />
-                  </TransformComponent>
-                </TransformWrapper>
+              <div ref={imageContainerRef} style={{ position: 'relative', display: 'inline-block' }}>
+                <img
+                  ref={imageRef}
+                  src={image}
+                  alt="Uploaded"
+                  style={{ maxWidth: '600px', maxHeight: '600px', display: 'block', userSelect: 'none' }}
+                />
 
                 <div
                   className="selection-box"
@@ -326,11 +334,11 @@ function App() {
         <div className="right-sidebar">
           <div className="info-item">
             <span className="info-label">Mission</span>
-            <span className="info-value">Voyager</span>
+            <span className="info-value">Explore</span>
           </div>
           <div className="info-item">
-            <span className="info-label">AI Model</span>
-            <span className="info-value">SwinIR</span>
+            <span className="info-label">Wavelength</span>
+            <span className="info-value">Visible</span>
           </div>
           <div className="info-item">
             <span className="info-label">Resolution</span>
@@ -345,8 +353,8 @@ function App() {
         {/* Bottom bar */}
         <div className="bottom-bar">
           <div className="status-indicator">
-            <div className="status-dot"></div>
-            <span>SYSTEM ONLINE</span>
+            <div className={systemOnline ? "status-dot" : "status-dot offline"}></div>
+            <span>{systemOnline ? 'SYSTEM ONLINE' : 'SYSTEM OFFLINE'}</span>
           </div>
         </div>
       </div>
@@ -355,23 +363,40 @@ function App() {
       {showHelp && (
         <div className="help-overlay" onClick={() => setShowHelp(false)}>
           <div className="help-dialog" onClick={(e) => e.stopPropagation()}>
-            <h2>CAIstellar Observatory</h2>
-            <p>
-              <strong>1. LOAD OBSERVATION</strong><br />
-              Click Upload to load telescope image or Camera to connect live feed
+            <h2 style={{ marginBottom: '10px' }}>🌌 MISSION BRIEFING</h2>
+            <h3 style={{ fontSize: '1.3rem', marginBottom: '20px', opacity: 0.9 }}>CAIstellar Observatory</h3>
+
+            <p style={{ marginBottom: '20px' }}>
+              <strong>OBJECTIVE:</strong> Demonstrate AI-powered image enhancement on Red Hat OpenShift AI
             </p>
-            <p>
-              <strong>2. TARGET CELESTIAL OBJECT</strong><br />
-              Drag the cyan box over the object you want to enhance
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>CAPABILITIES:</strong>
             </p>
-            <p>
-              <strong>3. ENHANCE</strong><br />
-              Click ENHANCE button - selected 256x256 area is enhanced to 512x512 (2x)
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Deep space image super-resolution (256px → 512px)</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Real-time model inference via MLServer</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Enterprise Kubernetes deployment</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>TECHNOLOGY:</strong>
             </p>
-            <p style={{ marginTop: '30px', fontSize: '0.85rem', opacity: 0.7 }}>
-              Powered by SwinIR AI model on OpenShift AI
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ SwinIR transformer architecture</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ ONNX runtime optimization</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Red Hat Universal Base Images</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>OPERATION:</strong>
             </p>
-            <button onClick={() => setShowHelp(false)} style={{ marginTop: '20px' }}>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Upload: Load telescope image from file</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Camera: Capture live feed from connected device</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Target: Drag selection box over celestial object</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Enhance: Process selected region with AI</p>
+
+            <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '25px' }}>
+              This Quickstart serves as a reference architecture for deploying production AI workloads on OpenShift.
+            </p>
+
+            <button onClick={() => setShowHelp(false)} style={{ marginTop: '25px' }}>
               CLOSE
             </button>
           </div>
