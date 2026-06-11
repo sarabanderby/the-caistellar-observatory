@@ -422,7 +422,7 @@ function App() {
       {showAbout && (
         <div className="help-overlay" onClick={() => setShowAbout(false)}>
           <div className="help-dialog" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ marginBottom: '10px' }}>🌌 MISSION BRIEFING</h2>
+            <h2 style={{ marginBottom: '10px' }}>MISSION BRIEFING</h2>
             <h3 style={{ fontSize: '1.3rem', marginBottom: '20px', opacity: 0.9 }}>CAIstellar Observatory</h3>
 
             <p style={{ marginBottom: '20px' }}>
