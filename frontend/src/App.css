@@ -625,3 +625,26 @@ input[type="file"] {
   border-left: none;
   border-top: none;
 }
+
+/* Zoom info display */
+.zoom-info {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(20, 40, 70, 0.9);
+  border: 1px solid rgba(100, 200, 255, 0.4);
+  padding: 12px 20px;
+  border-radius: 4px;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.zoom-info div {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

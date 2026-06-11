@@ -84,12 +84,31 @@ function App() {
       const newGridState = !gridVisible;
       setGridVisible(newGridState);
 
-      // Aladin Lite API method to toggle coordinate grid
+      // Try multiple methods to toggle the grid
       try {
-        aladin.setCooGrid(newGridState);
+        // Method 1: Direct API call (Aladin Lite v3)
+        if (typeof aladin.setCooGrid === 'function') {
+          aladin.setCooGrid(newGridState);
+        }
+        // Method 2: Options object (older versions)
+        else if (aladin.options) {
+          aladin.options.showCooGrid = newGridState;
+        }
+        // Method 3: View object
+        else if (aladin.view) {
+          aladin.view.options.showCooGrid = newGridState;
+        }
+
+        // Force redraw
+        if (aladin.view && typeof aladin.view.requestRedraw === 'function') {
+          aladin.view.requestRedraw();
+        } else if (typeof aladin.redraw === 'function') {
+          aladin.redraw();
+        }
       } catch (err) {
         console.error('Grid toggle error:', err);
-        console.log('Aladin object:', aladin);
+        console.log('Aladin instance:', aladin);
+        console.log('Available methods:', Object.keys(aladin));
       }
     }
   };
@@ -147,9 +166,15 @@ function App() {
         showShareControl: false,
         showCatalog: true,
         showFrame: false,
-        showCooGrid: gridVisible,
+        showCooGrid: true,
         fullScreen: false
       });
+
+      // Debug: Log available methods
+      console.log('Aladin instance created:', aladinInstance);
+      console.log('Aladin methods:', Object.keys(aladinInstance).filter(k => typeof aladinInstance[k] === 'function'));
+      console.log('Has setCooGrid?', typeof aladinInstance.setCooGrid);
+
       setAladin(aladinInstance);
     }
   };
