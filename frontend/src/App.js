@@ -318,6 +318,14 @@ function App() {
 
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
                 <button className="enhance-btn" onClick={handleEnhance} disabled={processing}>
+                  {processing && (
+                    <div className="spinner-container">
+                      <div className="planet"></div>
+                      <div className="moon-orbit">
+                        <div className="moon"></div>
+                      </div>
+                    </div>
+                  )}
                   {processing ? 'PROCESSING...' : 'ENHANCE'}
                 </button>
                 <button className="enhance-btn" onClick={clearImage}>
