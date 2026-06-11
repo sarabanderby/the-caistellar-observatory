@@ -84,17 +84,12 @@ function App() {
       const newGridState = !gridVisible;
       setGridVisible(newGridState);
 
-      // Aladin Lite uses the view.displayCooGrid property
+      // Aladin Lite API method to toggle coordinate grid
       try {
-        if (aladin.view) {
-          aladin.view.displayCooGrid = newGridState;
-          aladin.view.requestRedraw();
-        }
+        aladin.setCooGrid(newGridState);
       } catch (err) {
         console.error('Grid toggle error:', err);
-        // Log the aladin object to see available methods
         console.log('Aladin object:', aladin);
-        console.log('Aladin view:', aladin.view);
       }
     }
   };
