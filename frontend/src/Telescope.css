@@ -234,6 +234,27 @@
   50% { transform: translateX(-50%) translateY(-10px); }
 }
 
+/* Capture & Enhance button */
+.capture-enhance-btn {
+  background: rgba(255, 150, 120, 0.2);
+  border: 2px solid rgba(255, 150, 120, 0.6);
+  color: white;
+  padding: 12px 30px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
+  border-radius: 2px;
+}
+
+.capture-enhance-btn:hover {
+  background: rgba(255, 150, 120, 0.4);
+  border-color: rgba(255, 150, 120, 0.9);
+  box-shadow: 0 0 20px rgba(255, 150, 120, 0.5);
+}
+
 /* Help modal */
 .help-overlay {
   position: fixed;

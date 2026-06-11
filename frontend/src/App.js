@@ -76,6 +76,22 @@ function App() {
     }, 100);
   };
 
+  const handleCaptureAndEnhance = () => {
+    if (aladin) {
+      // Capture current Aladin view as base64 PNG
+      const dataURL = aladin.getViewDataURL('image/png');
+
+      // Load captured image into enhancement section
+      setImage(dataURL);
+      setEnhancedImage(null);
+      setError(null);
+      setBoxPosition({ x: 50, y: 50 });
+
+      // Scroll to top to show enhancement section
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const initAladin = () => {
     if (window.A) {
       const aladinInstance = window.A.aladin('#aladin-lite-div', {
@@ -597,6 +613,11 @@ function App() {
             <button className="nav-link-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               ← BACK TO ENHANCEMENT
             </button>
+            {telescopeView === 'telescope' && (
+              <button className="capture-enhance-btn" onClick={handleCaptureAndEnhance}>
+                CAPTURE & ENHANCE
+              </button>
+            )}
             <div className="status-indicator">
               <div className="status-dot"></div>
               <span>TELESCOPE ONLINE</span>
