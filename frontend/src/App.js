@@ -465,7 +465,7 @@ function App() {
                   <img src={enhancedImage} alt="Enhanced" />
                 </div>
 
-                <div className="ai-disclaimer" style={{ flex: '1', maxWidth: '400px', marginTop: '0' }}>
+                <div className="ai-disclaimer" style={{ flex: '1', maxWidth: '400px' }}>
                   <h4>⚠ AI Enhancement Notice</h4>
                   <p>
                     The AI enhancement process performs image restoration tasks such as super-resolution, denoising, and artifact removal.
