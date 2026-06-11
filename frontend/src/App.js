@@ -395,7 +395,7 @@ function App() {
                   ref={imageRef}
                   src={image}
                   alt="Uploaded"
-                  style={{ maxWidth: '800px', maxHeight: '700px', display: 'block', userSelect: 'none' }}
+                  style={{ maxWidth: '1200px', maxHeight: '900px', display: 'block', userSelect: 'none' }}
                 />
 
                 <div
