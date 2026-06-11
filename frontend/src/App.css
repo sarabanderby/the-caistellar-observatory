@@ -200,11 +200,11 @@ body {
 .celestial-object::after {
   content: '';
   position: absolute;
-  bottom: -150px;
+  bottom: -100px;
   left: 50%;
   transform: translateX(-50%);
   width: 600px;
-  height: 200px;
+  height: 150px;
   background: radial-gradient(ellipse at center, rgba(255, 120, 80, 0.4), rgba(255, 150, 100, 0.2) 40%, transparent 70%);
   filter: blur(40px);
   z-index: -1;

@@ -20,6 +20,7 @@ function App() {
   const [telescopeView, setTelescopeView] = useState('activate');
   const [showTelescopeHelp, setShowTelescopeHelp] = useState(false);
   const [aladin, setAladin] = useState(null);
+  const [gridVisible, setGridVisible] = useState(true);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const imageRef = useRef(null);
@@ -75,6 +76,14 @@ function App() {
     setTimeout(() => {
       initAladin();
     }, 100);
+  };
+
+  const toggleGrid = () => {
+    if (aladin) {
+      const newGridState = !gridVisible;
+      setGridVisible(newGridState);
+      aladin.showCooGrid(newGridState);
+    }
   };
 
   const handleCaptureAndEnhance = async () => {
@@ -654,9 +663,14 @@ function App() {
               ← BACK TO ENHANCEMENT
             </button>
             {telescopeView === 'telescope' && (
-              <button className="capture-enhance-btn" onClick={handleCaptureAndEnhance}>
-                CAPTURE & ENHANCE
-              </button>
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <button className="capture-enhance-btn" onClick={toggleGrid}>
+                  {gridVisible ? 'HIDE GRID' : 'SHOW GRID'}
+                </button>
+                <button className="capture-enhance-btn" onClick={handleCaptureAndEnhance}>
+                  CAPTURE & ENHANCE
+                </button>
+              </div>
             )}
             <div className="status-indicator">
               <div className="status-dot"></div>
