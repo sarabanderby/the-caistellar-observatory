@@ -11,12 +11,11 @@ body {
   font-family: 'Inter', sans-serif;
   background: #000000;
   color: #ffffff;
-  overflow: hidden;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .App {
-  height: 100vh;
-  overflow: hidden;
   position: relative;
   background: #000000;
 }
@@ -54,6 +53,12 @@ body {
   background: radial-gradient(ellipse at bottom, rgba(255, 150, 120, 0.3), transparent 70%);
   z-index: 2;
   pointer-events: none;
+}
+
+/* Section wrappers */
+.page-section {
+  min-height: 100vh;
+  position: relative;
 }
 
 .app-container {
@@ -227,6 +232,13 @@ body {
   color: rgba(255, 255, 255, 0.5);
   font-size: 24px;
   animation: bounce 2s infinite;
+  cursor: pointer;
+  z-index: 100;
+  transition: color 0.3s;
+}
+
+.scroll-indicator:hover {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 @keyframes bounce {
@@ -303,6 +315,22 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
   color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+}
+
+.nav-link-btn:hover {
+  color: rgba(255, 255, 255, 1);
 }
 
 button {

@@ -4,6 +4,7 @@ import './Telescope.css';
 function Telescope() {
   const [view, setView] = useState('activate'); // 'activate', 'telescope'
   const [aladin, setAladin] = useState(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     // Load Aladin Lite script
@@ -71,7 +72,7 @@ function Telescope() {
             <div className="logo-icon">⊙</div>
           </div>
           <div className="top-controls">
-            <button className="icon-btn" title="Help">?</button>
+            <button className="icon-btn" onClick={() => setShowHelp(true)} title="Help">?</button>
           </div>
         </div>
 
@@ -119,6 +120,43 @@ function Telescope() {
           </div>
         </div>
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div className="help-overlay" onClick={() => setShowHelp(false)}>
+          <div className="help-dialog" onClick={(e) => e.stopPropagation()}>
+            <h2>How to Use the Digital Telescope</h2>
+
+            <p style={{ marginTop: '20px', marginBottom: '15px' }}>
+              <strong>NAVIGATION</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Click and drag to pan across the sky</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Use mouse wheel or pinch to zoom in/out</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Click on stars and celestial objects for information</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>CONTROLS</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Use the zoom controls (+/-) on the right side</p>
+            <p style={{ marginLeft: '20px', marginBottom: '5px' }}>▸ Toggle layers to view different sky surveys</p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Click fullscreen icon to expand view</p>
+
+            <p style={{ marginBottom: '15px' }}>
+              <strong>COORDINATE GRID</strong>
+            </p>
+            <p style={{ marginLeft: '20px', marginBottom: '20px' }}>▸ Purple grid lines show Right Ascension (vertical) and Declination (horizontal)</p>
+
+            <p style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '25px', paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
+              Powered by <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'underline' }}>Aladin Lite</a> (GPL 3.0)<br />
+              Developed by CDS, Strasbourg Astronomical Data Center
+            </p>
+
+            <button onClick={() => setShowHelp(false)} style={{ marginTop: '25px' }}>
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
