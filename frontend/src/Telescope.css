@@ -1,0 +1,184 @@
+/* Telescope Page Styles */
+.telescope-page {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: #000000;
+}
+
+/* Starfield background with twinkle */
+.telescope-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(1px 1px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 15%, white, transparent),
+    radial-gradient(1px 1px at 45% 20%, white, transparent),
+    radial-gradient(1px 1px at 25% 55%, white, transparent),
+    radial-gradient(1px 1px at 70% 85%, white, transparent),
+    radial-gradient(1px 1px at 85% 40%, white, transparent),
+    radial-gradient(1px 1px at 40% 90%, white, transparent);
+  background-size: 100% 100%;
+  opacity: 0.6;
+  z-index: 1;
+  pointer-events: none;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; }
+  25% { opacity: 0.8; }
+  50% { opacity: 0.4; }
+  75% { opacity: 0.7; }
+}
+
+.telescope-page .app-container.telescope-active {
+  grid-template-columns: 1fr;
+}
+
+.telescope-page .app-container.telescope-active .left-sidebar,
+.telescope-page .app-container.telescope-active .right-sidebar {
+  display: none;
+}
+
+/* Telescope Header (shown when active) */
+.telescope-header {
+  display: none;
+  grid-column: 1 / -1;
+  padding: 30px 50px;
+  text-align: center;
+}
+
+.telescope-header.active {
+  display: block;
+}
+
+/* Activate screen */
+.activate-telescope {
+  text-align: center;
+}
+
+.activate-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.activate-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 30px;
+}
+
+.activate-btn {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 15px 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
+}
+
+.activate-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Hemisphere choice */
+.hemisphere-choice {
+  text-align: center;
+  display: none;
+}
+
+.hemisphere-choice.active {
+  display: block;
+}
+
+.choice-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.choice-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 40px;
+}
+
+.hemisphere-choice-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.hemisphere-choice-btn {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 15px 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
+}
+
+.hemisphere-choice-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Telescope container */
+.telescope-container {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  display: none;
+}
+
+.telescope-container.active {
+  display: block;
+}
+
+#aladin-lite-div {
+  width: 100%;
+  height: 100%;
+}
+
+/* Navigation link button */
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+}
+
+.nav-link-btn:hover {
+  color: rgba(255, 255, 255, 1);
+}

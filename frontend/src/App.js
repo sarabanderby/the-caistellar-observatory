@@ -274,6 +274,9 @@ function App() {
               <button className="nav-item" onClick={handleCameraClick}>
                 Camera
               </button>
+              <button className="nav-item" onClick={() => window.location.href = '/telescope'}>
+                Telescope
+              </button>
               <button className="nav-item" onClick={() => setShowAbout(true)}>
                 About
               </button>
